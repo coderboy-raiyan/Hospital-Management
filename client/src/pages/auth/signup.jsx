@@ -1,40 +1,36 @@
+import { Form, Formik } from "formik";
 import { useState } from "react";
 import { Link } from "react-router-dom";
 import { images } from "../../assets";
+import AuthFormInput from "../../components/Inputs/Auth/AuthFormInput";
+import signUpValidationSchema from "./schema/signUpValidationSchema";
+
+const initialSignUpFields = {
+  first_name: "",
+  last_name: "",
+  email: "",
+  password: "",
+  confirm_password: "",
+  username: "",
+};
 
 function SignUp() {
-  const [formData, setFormData] = useState({
-    first_name: "",
-    last_name: "",
-    email: "",
-    password: "",
-    confirm_password: "",
-    username: "",
-  });
+  const [signUpFormInputValues, setSignUpFormInputValues] =
+    useState(initialSignUpFields);
 
-  function handleFormChange(e) {
-    const { value, name } = e.target;
-    setFormData((prev) => {
-      return {
-        ...prev,
-        [name]: value,
-      };
-    });
-  }
+  const { first_name, last_name, email, password, confirm_password, username } =
+    signUpFormInputValues;
 
-  function submitForm(e) {
-    e.preventDefault();
-    if (formData.password !== formData.confirm_password) {
-      console.log("Password and confirm password did'nt match!!");
-    }
-    if (
-      !/(?=^.{8,}$)((?=.*\d)|(?=.*\W+))(?![.\n])(?=.*[A-Z])(?=.*[a-z]).*$"/.test(
-        formData.password
-      )
-    ) {
-      console.log("");
-    }
-    console.log(formData);
+  const handleInputChange = (e) => {
+    const { name, value } = e.target;
+    setSignUpFormInputValues((prev) => ({
+      ...prev,
+      [name]: value,
+    }));
+  };
+
+  function handleSignUpForm(values, { resetForm }) {
+    console.log(values);
   }
 
   return (
@@ -49,61 +45,164 @@ function SignUp() {
         </div>
 
         {/* form */}
-        <form onSubmit={submitForm} className="flex flex-col space-y-4">
-          <input
-            onChange={handleFormChange}
-            className="input input-bordered w-full"
-            required
-            placeholder="Username"
-            name="username"
-          />
-          <input
-            onChange={handleFormChange}
-            className="input input-bordered w-full"
-            required
-            placeholder="Email"
-            name="email"
-          />
-          <input
-            onChange={handleFormChange}
-            className="input input-bordered w-full"
-            required
-            placeholder="First Name"
-            name="first_name"
-          />
-          <input
-            onChange={handleFormChange}
-            className="input input-bordered w-full"
-            required
-            placeholder="Last Name"
-            name="last_name"
-          />
-          <input
-            onChange={handleFormChange}
-            className="input input-bordered w-full"
-            required
-            type="password"
-            placeholder="Password"
-            name="password"
-          />
-          <input
-            onChange={handleFormChange}
-            className="input input-bordered w-full"
-            required
-            type="password"
-            placeholder="Confirm Password"
-            name="confirm_password"
-          />
-          <p>
-            Already have an account ?{" "}
-            <Link className="btn btn-link p-0" to="/auth/signin">
-              Sign In
-            </Link>
-          </p>
-          <button className="btn btn-success text-white" type="submit">
-            Sign up
-          </button>
-        </form>
+
+        <Formik
+          initialValues={{
+            first_name,
+            last_name,
+            username,
+            password,
+            email,
+            confirm_password,
+          }}
+          validationSchema={signUpValidationSchema}
+          onSubmit={handleSignUpForm}
+          enableReinitialize
+        >
+          {({ errors, touched, values, handleBlur }) => (
+            <Form className="flex flex-col space-y-5">
+              <label htmlFor="username" className="relative flex flex-col">
+                <AuthFormInput
+                  value={values.username}
+                  onBlur={handleBlur}
+                  id="username"
+                  onChange={handleInputChange}
+                  type="text"
+                  placeholder="Username"
+                  name="username"
+                  styles={
+                    errors.username &&
+                    touched.username &&
+                    "border-red-500 focus:border-red-500 border-2"
+                  }
+                />
+                {errors.username && touched.username && (
+                  <span className="absolute -bottom-4 text-xs text-red-500">
+                    {errors.username}
+                  </span>
+                )}
+              </label>
+              <label htmlFor="first_name" className="relative flex flex-col">
+                <AuthFormInput
+                  value={values.first_name}
+                  onBlur={handleBlur}
+                  id="first_name"
+                  onChange={handleInputChange}
+                  type="text"
+                  placeholder="First Name"
+                  name="first_name"
+                  styles={
+                    errors.first_name &&
+                    touched.first_name &&
+                    "border-red-500 focus:border-red-500 border-2"
+                  }
+                />
+                {errors.first_name && touched.first_name && (
+                  <span className="absolute -bottom-4 text-xs text-red-500">
+                    {errors.first_name}
+                  </span>
+                )}
+              </label>
+              <label htmlFor="last_name" className="relative flex flex-col">
+                <AuthFormInput
+                  value={values.last_name}
+                  onBlur={handleBlur}
+                  id="last_name"
+                  onChange={handleInputChange}
+                  type="text"
+                  placeholder="Last Name"
+                  name="last_name"
+                  styles={
+                    errors.last_name &&
+                    touched.last_name &&
+                    "border-red-500 focus:border-red-500 border-2"
+                  }
+                />
+                {errors.last_name && touched.last_name && (
+                  <span className="absolute -bottom-4 text-xs text-red-500">
+                    {errors.last_name}
+                  </span>
+                )}
+              </label>
+              <label htmlFor="email" className="relative flex flex-col">
+                <AuthFormInput
+                  value={values.email}
+                  onBlur={handleBlur}
+                  id="email"
+                  onChange={handleInputChange}
+                  type="email"
+                  placeholder="Email"
+                  name="email"
+                  styles={
+                    errors.email &&
+                    touched.email &&
+                    "border-red-500 focus:border-red-500 border-2"
+                  }
+                />
+                {errors.email && touched.email && (
+                  <span className="absolute -bottom-4 text-xs text-red-500">
+                    {errors.email}
+                  </span>
+                )}
+              </label>
+              <label htmlFor="password" className="relative flex flex-col">
+                <AuthFormInput
+                  value={values.password}
+                  onBlur={handleBlur}
+                  id="password"
+                  onChange={handleInputChange}
+                  type="password"
+                  placeholder="Password"
+                  name="password"
+                  styles={
+                    errors.password &&
+                    touched.password &&
+                    "border-red-500 focus:border-red-500 border-2"
+                  }
+                />
+                {errors.password && touched.password && (
+                  <span className="absolute -bottom-4 text-xs text-red-500">
+                    {errors.password}
+                  </span>
+                )}
+              </label>
+              <label
+                htmlFor="confirm_password"
+                className="relative flex flex-col"
+              >
+                <AuthFormInput
+                  value={values.confirm_password}
+                  onBlur={handleBlur}
+                  id="confirm_password"
+                  onChange={handleInputChange}
+                  type="password"
+                  placeholder="Confirm Password"
+                  name="confirm_password"
+                  styles={
+                    errors.confirm_password &&
+                    touched.confirm_password &&
+                    "border-red-500 focus:border-red-500 border-2"
+                  }
+                />
+                {errors.confirm_password && touched.confirm_password && (
+                  <span className="absolute -bottom-4 text-xs text-red-500">
+                    {errors.confirm_password}
+                  </span>
+                )}
+              </label>
+
+              <p>
+                Already have an account ?{" "}
+                <Link className="btn btn-link p-0" to="/auth/signin">
+                  Sign In
+                </Link>
+              </p>
+              <button className="btn btn-success text-white" type="submit">
+                Sign up
+              </button>
+            </Form>
+          )}
+        </Formik>
       </div>
     </section>
   );

@@ -1,27 +1,33 @@
 /* eslint-disable react/no-unescaped-entities */
+import { Form, Formik } from "formik";
 import { useState } from "react";
 import { Link } from "react-router-dom";
 import { images } from "../../assets";
+import AuthFormInput from "../../components/Inputs/Auth/AuthFormInput";
+import signInValidationSchema from "./schema/signInValidationSchema";
 
-function SignIn() {
-  const [formData, setFormData] = useState({
-    password: "",
-    username: "",
-  });
+const initialSignInFields = {
+  password: "",
 
-  function handleFormChange(e) {
-    const { value, name } = e.target;
-    setFormData((prev) => {
-      return {
-        ...prev,
-        [name]: value,
-      };
-    });
-  }
+  username: "",
+};
 
-  function submitForm(e) {
-    e.preventDefault();
-    console.log(formData);
+function SignUp() {
+  const [signInFormInputValues, setSignInFormInputValues] =
+    useState(initialSignInFields);
+
+  const { password, username } = signInFormInputValues;
+
+  const handleInputChange = (e) => {
+    const { name, value } = e.target;
+    setSignInFormInputValues((prev) => ({
+      ...prev,
+      [name]: value,
+    }));
+  };
+
+  function handleSignInForm(values, { resetForm }) {
+    console.log(values);
   }
 
   return (
@@ -36,36 +42,77 @@ function SignIn() {
         </div>
 
         {/* form */}
-        <form onSubmit={submitForm} className="flex flex-col space-y-4">
-          <input
-            onChange={handleFormChange}
-            className="input input-bordered w-full"
-            required
-            placeholder="Username"
-            name="username"
-          />
 
-          <input
-            onChange={handleFormChange}
-            className="input input-bordered w-full"
-            required
-            placeholder="Password"
-            name="password"
-          />
+        <Formik
+          initialValues={{
+            username,
+            password,
+          }}
+          validationSchema={signInValidationSchema}
+          onSubmit={handleSignInForm}
+          enableReinitialize
+        >
+          {({ errors, touched, values, handleBlur }) => (
+            <Form className="flex flex-col space-y-5">
+              <label htmlFor="username" className="relative flex flex-col">
+                <AuthFormInput
+                  value={values.username}
+                  onBlur={handleBlur}
+                  id="username"
+                  onChange={handleInputChange}
+                  type="text"
+                  placeholder="Username"
+                  name="username"
+                  styles={
+                    errors.username &&
+                    touched.username &&
+                    "border-red-500 focus:border-red-500 border-2"
+                  }
+                />
+                {errors.username && touched.username && (
+                  <span className="absolute -bottom-4 text-xs text-red-500">
+                    {errors.username}
+                  </span>
+                )}
+              </label>
 
-          <p>
-            Don't have an account ?{" "}
-            <Link className="btn btn-link p-0" to="/auth/signup">
-              Sign Up
-            </Link>
-          </p>
-          <button className="btn btn-success text-white" type="submit">
-            Sign in
-          </button>
-        </form>
+              <label htmlFor="password" className="relative flex flex-col">
+                <AuthFormInput
+                  value={values.password}
+                  onBlur={handleBlur}
+                  id="password"
+                  onChange={handleInputChange}
+                  type="password"
+                  placeholder="Password"
+                  name="password"
+                  styles={
+                    errors.password &&
+                    touched.password &&
+                    "border-red-500 focus:border-red-500 border-2"
+                  }
+                />
+                {errors.password && touched.password && (
+                  <span className="absolute -bottom-4 text-xs text-red-500">
+                    {errors.password}
+                  </span>
+                )}
+              </label>
+
+              <p>
+                Don't have an account ?{" "}
+                <Link className="btn btn-link p-0" to="/auth/signup">
+                  Sign up
+                </Link>
+              </p>
+              <button className="btn btn-success text-white" type="submit">
+                Sign In
+              </button>
+            </Form>
+          )}
+        </Formik>
       </div>
     </section>
   );
 }
 
-export default SignIn;
+export default SignUp;
