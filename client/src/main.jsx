@@ -9,10 +9,11 @@ import SignIn from "./pages/auth/signin";
 import SignUp from "./pages/auth/signup";
 
 import AuthProvider from "./context/AuthProvider";
-import Profile from "./pages/Profile/Profile";
+
 import Appointment from "./pages/appointment/appointment";
 import Doctor from "./pages/doctor/doctor";
 import Home from "./pages/home/home";
+import Profile from "./pages/profile/profile";
 
 const router = createBrowserRouter([
   {
