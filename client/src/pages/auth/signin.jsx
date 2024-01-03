@@ -1,9 +1,11 @@
 /* eslint-disable react/no-unescaped-entities */
 import { Form, Formik } from "formik";
 import { useState } from "react";
-import { Link } from "react-router-dom";
+import toast from "react-hot-toast";
+import { Link, useNavigate } from "react-router-dom";
 import { images } from "../../assets";
 import AuthFormInput from "../../components/Inputs/Auth/AuthFormInput";
+import authHttpRequest from "../../services/Auth.services";
 import signInValidationSchema from "./schema/signInValidationSchema";
 
 const initialSignInFields = {
@@ -17,6 +19,8 @@ function SignUp() {
     useState(initialSignInFields);
 
   const { password, username } = signInFormInputValues;
+  const [loading, setLoading] = useState(false);
+  const navigate = useNavigate();
 
   const handleInputChange = (e) => {
     const { name, value } = e.target;
@@ -26,8 +30,22 @@ function SignUp() {
     }));
   };
 
-  function handleSignInForm(values, { resetForm }) {
-    console.log(values);
+  async function handleSignInForm(values, { resetForm }) {
+    try {
+      setLoading(true);
+      const data = await authHttpRequest.signIn(values);
+      toast.success("Logged in successfully");
+      console.log(data);
+      localStorage.setItem("token", data?.token);
+      localStorage.setItem("user_id", data?.user_id);
+      resetForm();
+      navigate("/");
+    } catch (error) {
+      toast.error(error?.response?.data?.error);
+      console.log(error);
+    } finally {
+      setLoading(false);
+    }
   }
 
   return (
@@ -104,9 +122,20 @@ function SignUp() {
                   Sign up
                 </Link>
               </p>
-              <button className="btn btn-success text-white" type="submit">
-                Sign In
-              </button>
+              {loading ? (
+                <button className="btn btn-success text-white">
+                  <span className="loading loading-spinner "></span>
+                  loading
+                </button>
+              ) : (
+                <button
+                  disabled={loading}
+                  className="btn btn-success text-white"
+                  type="submit"
+                >
+                  Sign In
+                </button>
+              )}
             </Form>
           )}
         </Formik>

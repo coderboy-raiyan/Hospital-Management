@@ -1,8 +1,10 @@
 import { Form, Formik } from "formik";
 import { useState } from "react";
-import { Link } from "react-router-dom";
+import toast from "react-hot-toast";
+import { Link, useNavigate } from "react-router-dom";
 import { images } from "../../assets";
 import AuthFormInput from "../../components/Inputs/Auth/AuthFormInput";
+import authHttpRequest from "../../services/Auth.services";
 import signUpValidationSchema from "./schema/signUpValidationSchema";
 
 const initialSignUpFields = {
@@ -17,6 +19,8 @@ const initialSignUpFields = {
 function SignUp() {
   const [signUpFormInputValues, setSignUpFormInputValues] =
     useState(initialSignUpFields);
+  const [loading, setLoading] = useState(false);
+  const navigate = useNavigate();
 
   const { first_name, last_name, email, password, confirm_password, username } =
     signUpFormInputValues;
@@ -29,8 +33,18 @@ function SignUp() {
     }));
   };
 
-  function handleSignUpForm(values, { resetForm }) {
-    console.log(values);
+  async function handleSignUpForm(values, { resetForm }) {
+    try {
+      setLoading(true);
+      const data = await authHttpRequest.signUp(values);
+      toast.success(data);
+      resetForm();
+      navigate("/auth/signin");
+    } catch (error) {
+      console.log(error);
+    } finally {
+      setLoading(false);
+    }
   }
 
   return (
@@ -197,9 +211,20 @@ function SignUp() {
                   Sign In
                 </Link>
               </p>
-              <button className="btn btn-success text-white" type="submit">
-                Sign up
-              </button>
+              {loading ? (
+                <button className="btn btn-success text-white">
+                  <span className="loading loading-spinner "></span>
+                  loading
+                </button>
+              ) : (
+                <button
+                  disabled={loading}
+                  className="btn btn-success text-white"
+                  type="submit"
+                >
+                  Sign up
+                </button>
+              )}
             </Form>
           )}
         </Formik>
