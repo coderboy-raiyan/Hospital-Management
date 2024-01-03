@@ -1,9 +1,23 @@
 import { Link, NavLink } from "react-router-dom";
 import { images } from "../../assets";
 import useAuthProvider from "../../hooks/useAuthProvider";
+import authHttpRequest from "../../services/Auth.services";
 
 function Header() {
-  const { user } = useAuthProvider();
+  const { user, setUser } = useAuthProvider();
+
+  async function handleLogout() {
+    try {
+      localStorage.removeItem("user");
+      setUser({});
+      await authHttpRequest.logout(
+        {},
+        { headers: { Authorization: `Token ${user?.token}` } }
+      );
+    } catch (error) {
+      console.log(error);
+    }
+  }
 
   return (
     <header className=" sticky z-50 top-0">
@@ -81,6 +95,12 @@ function Header() {
                     </button>
                   </NavLink>
                 </li>
+                <button
+                  onClick={handleLogout}
+                  className="bg-yellow-600 py-2 px-4 font-semibold  rounded-xl text-white text-sm"
+                >
+                  Logout
+                </button>
               </>
             ) : (
               <>

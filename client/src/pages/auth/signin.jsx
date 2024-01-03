@@ -6,6 +6,7 @@ import { Link, useNavigate } from "react-router-dom";
 import { images } from "../../assets";
 import AuthFormInput from "../../components/Inputs/Auth/AuthFormInput";
 import useAuthProvider from "../../hooks/useAuthProvider";
+import appointmentHttpRequest from "../../services/Appointment.services";
 import authHttpRequest from "../../services/Auth.services";
 import signInValidationSchema from "./schema/signInValidationSchema";
 
@@ -39,10 +40,19 @@ function SignUp() {
       setLoading(true);
       const data = await authHttpRequest.signIn(values);
       toast.success("Logged in successfully");
-      console.log(data);
       if (data?.token && data?.user_id) {
-        localStorage.setItem("user", JSON.stringify(data));
-        setUser(data);
+        const patient = await appointmentHttpRequest.getPatient(data?.user_id);
+        const userInfo = await authHttpRequest.getUserInfo(data?.user_id);
+
+        localStorage.setItem(
+          "user",
+          JSON.stringify({
+            ...data,
+            ...userInfo,
+            patient_id: patient[0]?.id || null,
+          })
+        );
+        setUser({ ...data, ...userInfo, patient_id: patient[0]?.id || null });
       }
       resetForm();
       navigate("/");

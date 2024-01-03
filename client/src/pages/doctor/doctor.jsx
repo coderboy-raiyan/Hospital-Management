@@ -1,7 +1,9 @@
+/* eslint-disable no-inner-declarations */
 import { useEffect, useState } from "react";
 import toast from "react-hot-toast";
 import { useParams } from "react-router-dom";
 import Loader from "../../components/Loader/Loader";
+import useAuthProvider from "../../hooks/useAuthProvider";
 import DoctorHttpRequest from "../../services/Doctor.services";
 import Review from "./../../components/Review/Review";
 import AppointmentForm from "./components/AppointmentForm";
@@ -17,6 +19,8 @@ function Doctor() {
     time: "",
     symptom: "",
   });
+
+  const { user } = useAuthProvider();
 
   useEffect(() => {
     async function loadDoctors() {
@@ -82,7 +86,7 @@ function Doctor() {
       ...appointmentForm,
       appointment_status: "Pending",
       cancel: false,
-      patient: 1,
+      patient: user?.patient_id,
       doctor: id,
     };
     try {
@@ -90,6 +94,7 @@ function Doctor() {
       toast.success("Appointment fixed successfully");
       document.getElementById("appointment_modal").close();
     } catch (error) {
+      toast.error(error?.response?.data?.patient[0]);
       console.log(error);
     }
   }
@@ -129,14 +134,16 @@ function Doctor() {
               <h4 className="text-xl  font-semibold text-[var(--text-color)]">
                 Fees: {doctor?.fee} BDT
               </h4>
-              <button
-                onClick={() =>
-                  document.getElementById("appointment_modal").showModal()
-                }
-                className="py-2  px-4 bg-[#06ABA1] rounded-full text-white font-semibold"
-              >
-                Take Appointment
-              </button>
+              {user?.user_id && (
+                <button
+                  onClick={() =>
+                    document.getElementById("appointment_modal").showModal()
+                  }
+                  className="py-2  px-4 bg-[#06ABA1] rounded-full text-white font-semibold"
+                >
+                  Take Appointment
+                </button>
+              )}
             </div>
             {/* Modal */}
             <AppointmentForm

@@ -9,6 +9,14 @@ class AuthHttpRequest {
     const { data } = await httpRequest.post("/patient/login/", payload);
     return data;
   }
+  async logout(payload = {}, config) {
+    const { data } = await httpRequest.post(
+      "/patient/logout/",
+      payload,
+      config
+    );
+    return data;
+  }
   async getUserInfo(user_id) {
     const { data } = await httpRequest.get(`/users/${user_id}`);
     return data;
