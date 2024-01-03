@@ -5,6 +5,7 @@ import toast from "react-hot-toast";
 import { Link, useNavigate } from "react-router-dom";
 import { images } from "../../assets";
 import AuthFormInput from "../../components/Inputs/Auth/AuthFormInput";
+import useAuthProvider from "../../hooks/useAuthProvider";
 import authHttpRequest from "../../services/Auth.services";
 import signInValidationSchema from "./schema/signInValidationSchema";
 
@@ -20,6 +21,9 @@ function SignUp() {
 
   const { password, username } = signInFormInputValues;
   const [loading, setLoading] = useState(false);
+
+  const { setUser } = useAuthProvider();
+
   const navigate = useNavigate();
 
   const handleInputChange = (e) => {
@@ -36,8 +40,10 @@ function SignUp() {
       const data = await authHttpRequest.signIn(values);
       toast.success("Logged in successfully");
       console.log(data);
-      localStorage.setItem("token", data?.token);
-      localStorage.setItem("user_id", data?.user_id);
+      if (data?.token && data?.user_id) {
+        localStorage.setItem("user", JSON.stringify(data));
+        setUser(data);
+      }
       resetForm();
       navigate("/");
     } catch (error) {

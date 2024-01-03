@@ -41,6 +41,7 @@ function SignUp() {
       resetForm();
       navigate("/auth/signin");
     } catch (error) {
+      toast.error(error?.response?.data?.error);
       console.log(error);
     } finally {
       setLoading(false);

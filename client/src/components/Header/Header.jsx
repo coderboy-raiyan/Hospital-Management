@@ -1,7 +1,10 @@
 import { Link, NavLink } from "react-router-dom";
 import { images } from "../../assets";
+import useAuthProvider from "../../hooks/useAuthProvider";
 
 function Header() {
+  const { user } = useAuthProvider();
+
   return (
     <header className=" sticky z-50 top-0">
       <nav className="bg-gray-100 shadow">
@@ -44,36 +47,75 @@ function Header() {
             <li>
               <NavLink>Contact us</NavLink>
             </li>
-            <li>
-              <NavLink
-                to="/auth/signup"
-                className={({ isActive }) =>
-                  `${
-                    isActive
-                      ? "text-[var(--text-color)] font-semibold"
-                      : "text-black"
-                  }`
-                }
-              >
-                Sign Up
-              </NavLink>
-            </li>
-            <li>
-              <NavLink
-                to="/auth/signin"
-                className={({ isActive }) =>
-                  `${
-                    isActive
-                      ? "text-[var(--text-color)] font-semibold"
-                      : "text-black"
-                  }`
-                }
-              >
-                <button className="bg-[var(--text-color)] py-2 px-5 rounded-xl text-white text-sm">
-                  Sign in
-                </button>
-              </NavLink>
-            </li>
+            {user.user_id ? (
+              <>
+                <li>
+                  <NavLink
+                    to="/profile"
+                    className={({ isActive }) =>
+                      `${
+                        isActive
+                          ? "text-[var(--text-color)] font-semibold"
+                          : "text-black"
+                      }`
+                    }
+                  >
+                    <button className="bg-[var(--text-color)] py-2 px-5 rounded-xl text-white text-sm">
+                      Profile
+                    </button>
+                  </NavLink>
+                </li>
+                <li>
+                  <NavLink
+                    to="/appointments"
+                    className={({ isActive }) =>
+                      `${
+                        isActive
+                          ? "text-[var(--text-color)] font-semibold"
+                          : "text-black"
+                      }`
+                    }
+                  >
+                    <button className="bg-[var(--text-color)] py-2 px-5 rounded-xl text-white text-sm">
+                      All Appointments
+                    </button>
+                  </NavLink>
+                </li>
+              </>
+            ) : (
+              <>
+                <li>
+                  <NavLink
+                    to="/auth/signup"
+                    className={({ isActive }) =>
+                      `${
+                        isActive
+                          ? "text-[var(--text-color)] font-semibold"
+                          : "text-black"
+                      }`
+                    }
+                  >
+                    Sign Up
+                  </NavLink>
+                </li>
+                <li>
+                  <NavLink
+                    to="/auth/signin"
+                    className={({ isActive }) =>
+                      `${
+                        isActive
+                          ? "text-[var(--text-color)] font-semibold"
+                          : "text-black"
+                      }`
+                    }
+                  >
+                    <button className="bg-[var(--text-color)] py-2 px-5 rounded-xl text-white text-sm">
+                      Sign in
+                    </button>
+                  </NavLink>
+                </li>
+              </>
+            )}
           </ul>
         </div>
       </nav>
