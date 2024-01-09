@@ -8,4 +8,4 @@ class Patient(models.Model):
     mobile_no = models.CharField(max_length=12)
 
     def __str__(self) -> str:
-        return f"{self.user.first_name} {self.user.last_login}"
+        return f"{self.user.first_name} {self.user.last_name}"
