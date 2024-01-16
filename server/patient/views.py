@@ -11,7 +11,7 @@ from django.utils.encoding import force_bytes
 from django.core.mail import EmailMultiAlternatives
 from django.template.loader import render_to_string
 from django.contrib.auth.models import User
-from django.contrib.auth import authenticate
+from django.contrib.auth import authenticate, login, logout
 
 class PatientViewSet(viewsets.ModelViewSet):
     queryset = models.Patient.objects.all()
@@ -51,12 +51,20 @@ class UserLoginApiView(APIView):
 
             if user :
                 token, _ = Token.objects.get_or_create(user=user)
+                login(request, user)
                 return Response({'token' : token.key, 'username' : user.username, 'email':user.email})
             
             else :
                 return Response({'error' : 'Invalid credential'})
 
         return Response(serializer.errors)
+
+
+class UserLogoutView(APIView):
+     def get(self, request):
+        request.user.auth_token.delete()
+        logout(request)
+        return redirect('login')
 
 def activate(request, uid64, token):
     try:

@@ -1,7 +1,7 @@
 from rest_framework import serializers
 from . import models
 from django.contrib.auth.models import User
-
+from rest_framework.permissions import IsAuthenticatedOrReadOnly
 
 
 class UserSerializer(serializers.ModelSerializer):
@@ -21,6 +21,7 @@ class DesignationSerializer(serializers.ModelSerializer):
         fields = '__all__'
 
 class AvailableTimeSerializer(serializers.ModelSerializer):
+    permission_classes = [IsAuthenticatedOrReadOnly]
     class Meta:
         model = models.AvailableTime
         fields = '__all__'
